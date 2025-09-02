@@ -27,6 +27,7 @@
       allowRepeats: 'Allow repeats',
       generate: 'Generate',
       reset: 'Reset',
+      erase: 'Erase',
       range: 'Range',
       generated: 'Generated',
       history: 'History',
@@ -42,6 +43,7 @@
       allowRepeats: '반복 허용',
       generate: '생성',
       reset: '초기화',
+      erase: '지우기',
       range: '범위',
       generated: '만든 숫자',
       history: '히스토리',
@@ -187,6 +189,7 @@
     repeatText.textContent = t.allowRepeats;
     generateBtn.textContent = t.generate;
     resetBtn.textContent = t.reset;
+    eraseBtn.textContent = t.erase;
     historyHeading.textContent = t.history;
     copyBtn.setAttribute('aria-label', t.copy);
     if (copyTooltip.textContent) copyTooltip.textContent = t.copied;

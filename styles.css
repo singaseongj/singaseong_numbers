@@ -84,7 +84,7 @@ h1 {
 }
 
 .switch-field input[type=checkbox]:checked {
-  background: #007acc;
+  background: #2563eb;
 }
 
 .switch-field input[type=checkbox]:checked::before {
@@ -101,30 +101,44 @@ button {
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 4px;
-  background: #007acc;
+  background: #2563eb;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-  background: #005fa3;
+  background: #1d4ed8;
+}
+
+button:active {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transform: translateY(1px);
 }
 
 #generate {
-  background: #28a745;
+  background: #22c55e;
 }
 
 #generate:hover {
-  background: #1e7e34;
+  background: #16a34a;
 }
 
 #reset {
-  background: #dc3545;
+  background: #ef4444;
 }
 
 #reset:hover {
-  background: #b02a37;
+  background: #dc2626;
+}
+
+#erase {
+  background: #facc15;
+  color: #000;
+}
+
+#erase:hover {
+  background: #eab308;
 }
 
 button:disabled {
@@ -133,7 +147,7 @@ button:disabled {
 }
 
 button:focus, input:focus {
-  outline: 2px solid #005fa3;
+  outline: 2px solid #1d4ed8;
   outline-offset: 2px;
 }
 
@@ -173,9 +187,20 @@ button:focus, input:focus {
   margin-top: 0.5rem;
 }
 
+
 .copy-wrapper {
   position: relative;
   display: inline-block;
+}
+
+#copyHistory {
+  background: transparent;
+  padding: 0;
+  color: #000;
+}
+
+#copyHistory:hover {
+  background: transparent;
 }
 
 .copy-wrapper img {
@@ -196,6 +221,7 @@ button:focus, input:focus {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
+  white-space: nowrap;
 }
 
 .tooltip.show {
@@ -209,6 +235,10 @@ button:focus, input:focus {
 
 .lang-buttons button {
   margin: 0 0.5rem;
+}
+
+.lang-sep {
+  color: #888;
 }
 
 .home-button {

@@ -17,6 +17,7 @@
   const copyTooltip = document.getElementById('copyTooltip');
   const langKoBtn = document.getElementById('lang-ko');
   const langEnBtn = document.getElementById('lang-en');
+  const eraseBtn = document.getElementById('erase');
 
   const translations = {
     en: {
@@ -54,7 +55,7 @@
   let currentLang = 'ko';
   let currentErrorKey = null;
 
-  let allowRepeats = true;
+  let allowRepeats = false;
   let generatedSet = new Set();
   let count = 0;
 
@@ -100,8 +101,8 @@
   function resetState() {
     minInput.value = '';
     maxInput.value = '';
-    allowRepeats = true;
-    repeatToggle.checked = true;
+    allowRepeats = false;
+    repeatToggle.checked = false;
     generatedSet.clear();
     count = 0;
     historyList.innerHTML = '';
@@ -151,6 +152,18 @@
     allowRepeats = repeatToggle.checked;
   });
 
+  eraseBtn.addEventListener('click', () => {
+    generatedSet.clear();
+    count = 0;
+    historyList.innerHTML = '';
+    renderResult('—');
+    clearError();
+    generateBtn.disabled = false;
+    const minVal = minInput.value || '—';
+    const maxVal = maxInput.value || '—';
+    updateStatus(minVal, maxVal, 0);
+  });
+
   copyBtn.addEventListener('click', () => {
     const items = Array.from(historyList.children).map(li => li.textContent);
     if (!items.length) return;
@@ -186,6 +199,7 @@
   langKoBtn.addEventListener('click', () => switchLanguage('ko'));
   langEnBtn.addEventListener('click', () => switchLanguage('en'));
 
+  repeatToggle.checked = false;
   switchLanguage('ko');
   renderResult('—');
 })();

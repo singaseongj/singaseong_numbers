@@ -13,6 +13,8 @@
   const maxLabel = document.querySelector('label[for="max"]');
   const repeatText = document.querySelector('.switch-text');
   const historyHeading = document.querySelector('.history h2');
+  const copyBtn = document.getElementById('copyHistory');
+  const copyMessage = document.getElementById('copyMessage');
   const langKoBtn = document.getElementById('lang-ko');
   const langEnBtn = document.getElementById('lang-en');
 
@@ -27,6 +29,8 @@
       range: 'Range',
       generated: 'Generated',
       history: 'History',
+      copy: 'Copy',
+      copied: 'Copied to clipboard',
       enterRange: 'Please enter both minimum and maximum numbers.',
       allGenerated: 'All numbers in the range have been generated.'
     },
@@ -40,6 +44,8 @@
       range: '범위',
       generated: '만든 숫자',
       history: '히스토리',
+      copy: '복사',
+      copied: '클립보드에 복사완료',
       enterRange: '최소와 최대 값을 입력하세요.',
       allGenerated: '범위의 모든 숫자를 생성했습니다.'
     }
@@ -145,6 +151,14 @@
     allowRepeats = repeatToggle.checked;
   });
 
+  copyBtn.addEventListener('click', () => {
+    const items = Array.from(historyList.children).map(li => li.textContent);
+    if (!items.length) return;
+    navigator.clipboard.writeText(items.join('\n')).then(() => {
+      copyMessage.textContent = translations[currentLang].copied;
+    });
+  });
+
   function switchLanguage(lang) {
     currentLang = lang;
     const t = translations[lang];
@@ -157,6 +171,8 @@
     generateBtn.textContent = t.generate;
     resetBtn.textContent = t.reset;
     historyHeading.textContent = t.history;
+    copyBtn.textContent = t.copy;
+    if (copyMessage.textContent) copyMessage.textContent = t.copied;
     const minVal = minInput.value || '—';
     const maxVal = maxInput.value || '—';
     updateStatus(minVal, maxVal, count);

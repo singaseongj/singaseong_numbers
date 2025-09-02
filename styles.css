@@ -169,6 +169,10 @@ button:focus, input:focus {
   border-radius: 4px;
 }
 
+.history button {
+  margin-top: 0.5rem;
+}
+
 .lang-buttons {
   margin-top: 1.5rem;
   text-align: center;

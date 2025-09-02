@@ -153,6 +153,15 @@ button:focus, input:focus {
   border-radius: 4px;
 }
 
+.lang-buttons {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.lang-buttons button {
+  margin: 0 0.5rem;
+}
+
 .home-button {
   position: fixed;
   top: 10px;

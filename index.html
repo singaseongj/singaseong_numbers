@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Singaseong Numbers</title>
+  <title>신가성의 숫자들</title>
   <link rel="apple-touch-icon" sizes="180x180" href="src/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="src/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="src/favicon-16x16.png">
@@ -16,34 +16,38 @@
   <a href="https://singaseongj.github.io/" class="home-button" aria-label="Home">&#x21A9;</a>
   <main class="container">
     <header>
-      <h1>Singaseong Numbers</h1>
+      <h1>신가성의 숫자들</h1>
     </header>
     <section id="result" class="display" aria-live="polite">—</section>
     <section class="controls">
       <div class="field">
-        <label for="min">Minimum</label>
+        <label for="min">최소</label>
         <input type="number" id="min">
       </div>
       <div class="field">
-        <label for="max">Maximum</label>
+        <label for="max">최대</label>
         <input type="number" id="max">
       </div>
       <div class="field switch-field">
         <input type="checkbox" id="repeatToggle" checked>
         <label for="repeatToggle" class="switch-slider"></label>
-        <label for="repeatToggle" class="switch-text">Allow repeats</label>
+        <label for="repeatToggle" class="switch-text">반복 허용</label>
       </div>
       <div class="buttons">
-        <button id="generate">Generate</button>
-        <button id="reset" type="reset">Reset</button>
+        <button id="generate">생성</button>
+        <button id="reset" type="reset">초기화</button>
       </div>
     </section>
     <p id="error" class="error" aria-live="polite"></p>
-    <p id="status" class="status" aria-live="polite">Range: —–— • Generated: 0</p>
+    <p id="status" class="status" aria-live="polite">범위: —–— • 만든 숫자: 0</p>
     <section class="history">
-      <h2>History</h2>
+      <h2>히스토리</h2>
       <ul id="history"></ul>
     </section>
+    <div class="lang-buttons">
+      <button id="lang-ko" type="button">한국어</button>
+      <button id="lang-en" type="button">English</button>
+    </div>
   </main>
 </body>
 </html>

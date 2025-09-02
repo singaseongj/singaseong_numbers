@@ -1,0 +1,9 @@
+{
+  "name": "singaseong_numbers",
+  "version": "1.0.0",
+  "description": "Random number generator project",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  }
+}

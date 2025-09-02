@@ -29,12 +29,13 @@
         <input type="number" id="max">
       </div>
       <div class="field switch-field">
-        <input type="checkbox" id="repeatToggle" checked>
+        <input type="checkbox" id="repeatToggle">
         <label for="repeatToggle" class="switch-slider"></label>
         <label for="repeatToggle" class="switch-text">반복 허용</label>
       </div>
       <div class="buttons">
         <button id="generate">생성</button>
+        <button id="erase" type="button">Erase</button>
         <button id="reset" type="reset">초기화</button>
       </div>
     </section>
@@ -52,6 +53,7 @@
     </section>
     <div class="lang-buttons">
       <button id="lang-ko" type="button">한국어</button>
+      <span class="lang-sep" aria-hidden="true">|</span>
       <button id="lang-en" type="button">English</button>
     </div>
   </main>

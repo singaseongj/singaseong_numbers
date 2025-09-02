@@ -43,8 +43,12 @@
     <section class="history">
       <h2>히스토리</h2>
       <ul id="history"></ul>
-      <button id="copyHistory" type="button">복사</button>
-      <p id="copyMessage" class="status" aria-live="polite"></p>
+      <div class="copy-wrapper">
+        <button id="copyHistory" type="button" aria-label="복사">
+          <img src="src/copy.svg" alt="">
+        </button>
+        <span id="copyTooltip" class="tooltip" aria-live="polite"></span>
+      </div>
     </section>
     <div class="lang-buttons">
       <button id="lang-ko" type="button">한국어</button>

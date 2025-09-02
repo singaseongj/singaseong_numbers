@@ -14,7 +14,7 @@
   const repeatText = document.querySelector('.switch-text');
   const historyHeading = document.querySelector('.history h2');
   const copyBtn = document.getElementById('copyHistory');
-  const copyMessage = document.getElementById('copyMessage');
+  const copyTooltip = document.getElementById('copyTooltip');
   const langKoBtn = document.getElementById('lang-ko');
   const langEnBtn = document.getElementById('lang-en');
 
@@ -154,8 +154,12 @@
   copyBtn.addEventListener('click', () => {
     const items = Array.from(historyList.children).map(li => li.textContent);
     if (!items.length) return;
-    navigator.clipboard.writeText(items.join('\n')).then(() => {
-      copyMessage.textContent = translations[currentLang].copied;
+    navigator.clipboard.writeText(items.join(' ')).then(() => {
+      copyTooltip.textContent = translations[currentLang].copied;
+      copyTooltip.classList.add('show');
+      setTimeout(() => {
+        copyTooltip.classList.remove('show');
+      }, 1500);
     });
   });
 
@@ -171,8 +175,8 @@
     generateBtn.textContent = t.generate;
     resetBtn.textContent = t.reset;
     historyHeading.textContent = t.history;
-    copyBtn.textContent = t.copy;
-    if (copyMessage.textContent) copyMessage.textContent = t.copied;
+    copyBtn.setAttribute('aria-label', t.copy);
+    if (copyTooltip.textContent) copyTooltip.textContent = t.copied;
     const minVal = minInput.value || '—';
     const maxVal = maxInput.value || '—';
     updateStatus(minVal, maxVal, count);

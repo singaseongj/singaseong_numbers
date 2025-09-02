@@ -111,6 +111,22 @@ button:hover {
   background: #005fa3;
 }
 
+#generate {
+  background: #28a745;
+}
+
+#generate:hover {
+  background: #1e7e34;
+}
+
+#reset {
+  background: #dc3545;
+}
+
+#reset:hover {
+  background: #b02a37;
+}
+
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

@@ -119,8 +119,7 @@
 
   function renderResult(value, group) {
     if (group) {
-      const t = translations[currentLang];
-      resultDisplay.textContent = `${value} (${t.group} ${group})`;
+      resultDisplay.innerHTML = `${value} <span class="group-number">(${group})</span>`;
     } else {
       resultDisplay.textContent = value;
     }

@@ -102,18 +102,37 @@
 
   function initializeGroups(min, max) {
     const total = max - min + 1;
-    const groupCount = Math.ceil(total / 4);
     const nums = [];
     for (let n = min; n <= max; n++) nums.push(n);
     for (let i = nums.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [nums[i], nums[j]] = [nums[j], nums[i]];
     }
+    const gMin = Math.ceil(total / 5);
+    const gMax = Math.floor(total / 4);
+    let groupCount;
+    let groupSizes = [];
+    if (gMin > gMax) {
+      groupCount = Math.ceil(total / 4);
+      groupSizes = Array(groupCount).fill(Math.floor(total / groupCount));
+      const remainder = total % groupCount;
+      for (let i = 0; i < remainder; i++) groupSizes[i]++;
+    } else {
+      groupCount = Math.round(total / 4.5);
+      if (groupCount < gMin) groupCount = gMin;
+      if (groupCount > gMax) groupCount = gMax;
+      const fiveGroups = total - 4 * groupCount;
+      groupSizes = Array(groupCount).fill(4);
+      for (let i = 0; i < fiveGroups; i++) groupSizes[i]++;
+    }
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
-    nums.forEach((num, idx) => {
-      const g = idx % groupCount;
-      numberToGroup[num] = g + 1;
+    let idx = 0;
+    groupSizes.forEach((size, g) => {
+      for (let i = 0; i < size; i++) {
+        const num = nums[idx++];
+        numberToGroup[num] = g + 1;
+      }
     });
   }
 

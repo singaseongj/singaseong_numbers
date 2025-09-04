@@ -187,6 +187,46 @@ button:focus, input:focus {
   margin-top: 0.5rem;
 }
 
+.groups {
+  margin-top: 1.5rem;
+}
+
+.groups h2 {
+  font-size: 1.2rem;
+}
+
+.groups-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.group {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5rem;
+  min-width: 80px;
+}
+
+.group h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.group ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.group li {
+  background: #f3f3f3;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  margin-bottom: 0.3rem;
+  text-align: center;
+}
+
 
 .copy-wrapper {
   position: relative;

@@ -33,6 +33,10 @@ h1 {
   margin: 1rem 0;
 }
 
+#result .group-number {
+  font-size: 0.5em;
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;

@@ -10,6 +10,7 @@
   const errorBox = document.getElementById('error');
   const groupsContainer = document.getElementById('groupsContainer');
   const groupsHeading = document.getElementById('groupsHeading');
+  const groupsSection = document.getElementById('groupsSection');
   const titleEl = document.querySelector('h1');
   const minLabel = document.querySelector('label[for="min"]');
   const maxLabel = document.querySelector('label[for="max"]');
@@ -67,6 +68,8 @@
   let generatedSet = new Set();
   let count = 0;
   let historyArr = [];
+  let numberToGroup = {};
+  let groupLists = [];
 
   function setError(key) {
     currentErrorKey = key;
@@ -97,8 +100,30 @@
     statusLine.textContent = `${t.range}: ${min}–${max} • ${t.generated}: ${countVal}`;
   }
 
-  function renderResult(value) {
-    resultDisplay.textContent = value;
+  function initializeGroups(min, max) {
+    const total = max - min + 1;
+    const groupCount = Math.ceil(total / 4);
+    const nums = [];
+    for (let n = min; n <= max; n++) nums.push(n);
+    for (let i = nums.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [nums[i], nums[j]] = [nums[j], nums[i]];
+    }
+    numberToGroup = {};
+    groupLists = Array.from({ length: groupCount }, () => []);
+    nums.forEach((num, idx) => {
+      const g = idx % groupCount;
+      numberToGroup[num] = g + 1;
+    });
+  }
+
+  function renderResult(value, group) {
+    if (group) {
+      const t = translations[currentLang];
+      resultDisplay.textContent = `${value} (${t.group} ${group})`;
+    } else {
+      resultDisplay.textContent = value;
+    }
   }
 
   function renderHistory(value) {
@@ -110,30 +135,15 @@
   function renderGroups() {
     groupsContainer.innerHTML = '';
     const t = translations[currentLang];
-    const total = historyArr.length;
-    if (!total) return;
-    let groups = [];
-    if (total <= 4) {
-      groups = [historyArr.slice()];
-    } else {
-      const groupCount = Math.floor(total / 4);
-      const remainder = total % 4;
-      let idx = 0;
-      for (let i = 0; i < groupCount; i++) {
-        const size = i < remainder ? 5 : 4;
-        groups.push(historyArr.slice(idx, idx + size));
-        idx += size;
-      }
-      if (idx < total) groups.push(historyArr.slice(idx));
-    }
-    groups.forEach((g, i) => {
+    groupLists.forEach((nums, i) => {
+      if (!nums.length) return;
       const wrapper = document.createElement('div');
       wrapper.className = 'group';
       const h3 = document.createElement('h3');
       h3.textContent = `${t.group} ${i + 1}`;
       wrapper.appendChild(h3);
       const ul = document.createElement('ul');
-      g.forEach(n => {
+      nums.forEach(n => {
         const li = document.createElement('li');
         li.textContent = n;
         ul.appendChild(li);
@@ -141,6 +151,7 @@
       wrapper.appendChild(ul);
       groupsContainer.appendChild(wrapper);
     });
+    groupsSection.style.display = groupsContainer.childElementCount ? 'block' : 'none';
   }
 
   function resetState() {
@@ -153,6 +164,9 @@
     historyList.innerHTML = '';
     historyArr = [];
     groupsContainer.innerHTML = '';
+    numberToGroup = {};
+    groupLists = [];
+    groupsSection.style.display = 'none';
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -164,6 +178,9 @@
     const range = getRange();
     if (!range) return;
     const { min, max } = range;
+    if (count === 0 || !Object.keys(numberToGroup).length) {
+      initializeGroups(min, max);
+    }
     let value;
     const total = max - min + 1;
     if (!allowRepeats) {
@@ -180,7 +197,9 @@
       value = Math.floor(Math.random() * (max - min + 1)) + min;
     }
     count++;
-    renderResult(value);
+    const group = numberToGroup[value];
+    groupLists[group - 1].push(value);
+    renderResult(value, group);
     renderHistory(value);
     historyArr.push(value);
     renderGroups();
@@ -207,6 +226,9 @@
     historyList.innerHTML = '';
     historyArr = [];
     groupsContainer.innerHTML = '';
+    numberToGroup = {};
+    groupLists = [];
+    groupsSection.style.display = 'none';
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -247,6 +269,12 @@
     const maxVal = maxInput.value || '—';
     updateStatus(minVal, maxVal, count);
     if (currentErrorKey) setError(currentErrorKey);
+    if (historyArr.length) {
+      const last = historyArr[historyArr.length - 1];
+      renderResult(last, numberToGroup[last]);
+    } else {
+      renderResult('—');
+    }
     renderGroups();
   }
 
@@ -255,5 +283,4 @@
 
   repeatToggle.checked = false;
   switchLanguage('ko');
-  renderResult('—');
 })();

@@ -38,7 +38,7 @@
       copied: 'Copied to clipboard',
       enterRange: 'Please enter both minimum and maximum numbers.',
       allGenerated: 'All numbers in the range have been generated.',
-      groups: 'Groups',
+      groups: 'Groups of 4 or 5',
       group: 'Group'
     },
     ko: {
@@ -56,7 +56,7 @@
       copied: '클립보드에 복사완료',
       enterRange: '최소와 최대 값을 입력하세요.',
       allGenerated: '범위의 모든 숫자를 생성했습니다.',
-      groups: '그룹',
+      groups: '그룹(4인 또는 5인 1조)',
       group: '그룹'
     }
   };

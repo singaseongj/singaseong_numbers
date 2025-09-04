@@ -8,6 +8,8 @@
   const statusLine = document.getElementById('status');
   const historyList = document.getElementById('history');
   const errorBox = document.getElementById('error');
+  const groupsContainer = document.getElementById('groupsContainer');
+  const groupsHeading = document.getElementById('groupsHeading');
   const titleEl = document.querySelector('h1');
   const minLabel = document.querySelector('label[for="min"]');
   const maxLabel = document.querySelector('label[for="max"]');
@@ -34,7 +36,9 @@
       copy: 'Copy',
       copied: 'Copied to clipboard',
       enterRange: 'Please enter both minimum and maximum numbers.',
-      allGenerated: 'All numbers in the range have been generated.'
+      allGenerated: 'All numbers in the range have been generated.',
+      groups: 'Groups',
+      group: 'Group'
     },
     ko: {
       title: '신가성의 숫자들',
@@ -50,7 +54,9 @@
       copy: '복사',
       copied: '클립보드에 복사완료',
       enterRange: '최소와 최대 값을 입력하세요.',
-      allGenerated: '범위의 모든 숫자를 생성했습니다.'
+      allGenerated: '범위의 모든 숫자를 생성했습니다.',
+      groups: '그룹',
+      group: '그룹'
     }
   };
 
@@ -60,6 +66,7 @@
   let allowRepeats = false;
   let generatedSet = new Set();
   let count = 0;
+  let historyArr = [];
 
   function setError(key) {
     currentErrorKey = key;
@@ -100,6 +107,42 @@
     historyList.prepend(li);
   }
 
+  function renderGroups() {
+    groupsContainer.innerHTML = '';
+    const t = translations[currentLang];
+    const total = historyArr.length;
+    if (!total) return;
+    let groups = [];
+    if (total <= 4) {
+      groups = [historyArr.slice()];
+    } else {
+      const groupCount = Math.floor(total / 4);
+      const remainder = total % 4;
+      let idx = 0;
+      for (let i = 0; i < groupCount; i++) {
+        const size = i < remainder ? 5 : 4;
+        groups.push(historyArr.slice(idx, idx + size));
+        idx += size;
+      }
+      if (idx < total) groups.push(historyArr.slice(idx));
+    }
+    groups.forEach((g, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'group';
+      const h3 = document.createElement('h3');
+      h3.textContent = `${t.group} ${i + 1}`;
+      wrapper.appendChild(h3);
+      const ul = document.createElement('ul');
+      g.forEach(n => {
+        const li = document.createElement('li');
+        li.textContent = n;
+        ul.appendChild(li);
+      });
+      wrapper.appendChild(ul);
+      groupsContainer.appendChild(wrapper);
+    });
+  }
+
   function resetState() {
     minInput.value = '';
     maxInput.value = '';
@@ -108,6 +151,8 @@
     generatedSet.clear();
     count = 0;
     historyList.innerHTML = '';
+    historyArr = [];
+    groupsContainer.innerHTML = '';
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -137,6 +182,8 @@
     count++;
     renderResult(value);
     renderHistory(value);
+    historyArr.push(value);
+    renderGroups();
     updateStatus(min, max, count);
   }
 
@@ -158,6 +205,8 @@
     generatedSet.clear();
     count = 0;
     historyList.innerHTML = '';
+    historyArr = [];
+    groupsContainer.innerHTML = '';
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -191,12 +240,14 @@
     resetBtn.textContent = t.reset;
     eraseBtn.textContent = t.erase;
     historyHeading.textContent = t.history;
+    groupsHeading.textContent = t.groups;
     copyBtn.setAttribute('aria-label', t.copy);
     if (copyTooltip.textContent) copyTooltip.textContent = t.copied;
     const minVal = minInput.value || '—';
     const maxVal = maxInput.value || '—';
     updateStatus(minVal, maxVal, count);
     if (currentErrorKey) setError(currentErrorKey);
+    renderGroups();
   }
 
   langKoBtn.addEventListener('click', () => switchLanguage('ko'));

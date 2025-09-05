@@ -133,7 +133,7 @@
     drawQueue = nums.slice();
     drawIndex = 0;
 
-    // Generalized sizing: each group within [sMin, sMax], prefer fewer groups (larger size).
+    // Generalized sizing: each group within [sMin, sMax], prefer MORE groups (smaller size).
     const { sMin, sMax } = getGroupSizeRange();
     const gCountMin = Math.ceil(total / sMax);
     const gCountMax = Math.floor(total / sMin);
@@ -142,8 +142,8 @@
     let groupSizes = [];
 
     if (gCountMin <= gCountMax) {
-      // Try the fewest groups first (fewer, larger groups)
-      for (let g = gCountMin; g <= gCountMax; g++) {
+      // Try the MOST groups first (more, smaller groups)
+      for (let g = gCountMax; g >= gCountMin; g--) {
         const extra = total - sMin * g; // how many +1s we must distribute
         const capacity = g * (sMax - sMin);
         if (extra >= 0 && extra <= capacity) {
@@ -164,9 +164,10 @@
       }
     }
 
-    // If no exact solution in [sMin, sMax], fall back to near-equal split
+    // If no exact solution in [sMin, sMax], fall back to near-equal split,
+    // leaning toward MORE groups (smaller sizes).
     if (!groupCount) {
-      groupCount = Math.max(1, Math.round(total / ((sMin + sMax) / 2)));
+      groupCount = Math.max(1, Math.ceil(total / sMin));
       groupSizes = Array(groupCount).fill(Math.floor(total / groupCount));
       let remainder = total % groupCount;
       for (let i = 0; i < remainder; i++) groupSizes[i]++;

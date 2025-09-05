@@ -175,14 +175,20 @@
 
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
-    // Assign numbers to groups according to the same predetermined order
-    let idx = 0;
-    groupSizes.forEach((size, g) => {
-      for (let i = 0; i < size; i++) {
-        const num = drawQueue[idx++];
-        numberToGroup[num] = g + 1;
-      }
-    });
+    // Build a list of "slots" with group ids repeated by their target sizes
+    const slots = [];
+    for (let g = 0; g < groupCount; g++) {
+      for (let i = 0; i < groupSizes[g]; i++) slots.push(g + 1);
+    }
+    // Shuffle slots so upcoming numbers are assigned to groups in random order
+    for (let i = slots.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [slots[i], slots[j]] = [slots[j], slots[i]];
+    }
+    // Pair each predetermined number with a randomized group slot (future is fixed)
+    for (let i = 0; i < drawQueue.length; i++) {
+      numberToGroup[drawQueue[i]] = slots[i];
+    }
   }
 
   function renderResult(value, group) {

@@ -78,6 +78,9 @@
   // Predetermined draw order so Generate / Generate All share the same "future"
   let drawQueue = [];
   let drawIndex = 0;
+  // Predetermined value→group pairs (the actual "deal" we peel from)
+  let deals = [];
+  let dealIndex = 0;
 
   function setError(key) {
     currentErrorKey = key;
@@ -132,6 +135,8 @@
     }
     drawQueue = nums.slice();
     drawIndex = 0;
+    deals = [];
+    dealIndex = 0;
 
     // Generalized sizing: each group within [sMin, sMax], prefer MORE groups (smaller size).
     const { sMin, sMax } = getGroupSizeRange();
@@ -176,8 +181,8 @@
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
 
-    // Build slots with a balanced "deal": each round takes at most one slot per group,
-    // but the round order is randomized. This avoids filling Group 1, then 2, etc.
+    // Build a balanced "deal": each round takes at most one slot per group,
+    // and the round order is randomized. This avoids filling any group first.
     const quotas = groupSizes.slice(); // remaining capacity per group
     const groups = Array.from({ length: groupCount }, (_, i) => i + 1);
     const slots = [];
@@ -195,10 +200,10 @@
         quotas[g - 1]--;
       }
     }
-    // Pair each predetermined number with the balanced-random slot order
-    for (let i = 0; i < drawQueue.length; i++) {
-      numberToGroup[drawQueue[i]] = slots[i];
-    }
+    // Finalize the single predetermined sequence of {value, group}
+    deals = drawQueue.map((value, i) => ({ value, group: slots[i] }));
+    // Keep this map so existing code (e.g., switchLanguage) still works
+    for (const { value, group } of deals) numberToGroup[value] = group;
   }
 
   function renderResult(value, group) {
@@ -253,6 +258,8 @@
     groupLists = [];
     drawQueue = [];
     drawIndex = 0;
+    deals = [];
+    dealIndex = 0;
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -270,19 +277,20 @@
     let value;
     const total = max - min + 1;
     if (!allowRepeats) {
-      if (drawIndex >= drawQueue.length) {
+      if (dealIndex >= deals.length) {
         setError('allGenerated');
         generateBtn.disabled = true;
         return;
       }
-      value = drawQueue[drawIndex++];
+      const pair = deals[dealIndex++];
+      value = pair.value;
       generatedSet.add(value);
     } else {
       // repeats allowed: still random
       value = Math.floor(Math.random() * (max - min + 1)) + min;
     }
     count++;
-    const group = numberToGroup[value];
+    const group = numberToGroup[value]; // same as deals[dealIndex-1].group
     groupLists[group - 1].push(value);
     renderResult(value, group);
     renderHistory(value);
@@ -302,25 +310,24 @@
     if (count === 0 || !Object.keys(numberToGroup).length) {
       initializeGroups(min, max);
     }
-    // Use the predetermined order to take all remaining (unique) numbers
-    const remaining = drawQueue.slice(drawIndex);
-    if (!remaining.length) {
+    // Use the predetermined deal to take all remaining (unique) pairs
+    const remainingPairs = deals.slice(dealIndex);
+    if (!remainingPairs.length) {
       setError('allGenerated');
       generateBtn.disabled = true;
       return;
     }
     let last;
-    remaining.forEach(value => {
+    remainingPairs.forEach(({ value, group }) => {
       generatedSet.add(value);
       count++;
-      const group = numberToGroup[value];
       groupLists[group - 1].push(value);
       renderHistory(value);
       historyArr.push(value);
       last = value;
     });
-    drawIndex = drawQueue.length;
-    renderResult(last, numberToGroup[last]);
+    dealIndex = deals.length;
+    renderResult(last, numberToGroup[last]); // same as remainingPairs.at(-1).group
     renderGroups();
     updateStatus(min, max, count);
     generateBtn.disabled = true;
@@ -356,6 +363,8 @@
     groupLists = [];
     drawQueue = [];
     drawIndex = 0;
+    deals = [];
+    dealIndex = 0;
     allowRepeats = false;
     repeatToggle.checked = false;
     updateGroupsVisibility();

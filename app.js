@@ -9,6 +9,7 @@
   const historyList = document.getElementById('history');
   const errorBox = document.getElementById('error');
   const groupsContainer = document.getElementById('groupsContainer');
+  const groupsSection = document.getElementById('groupsSection');
   const groupsHeading = document.getElementById('groupsHeading');
   const generateAllBtn = document.getElementById('generateAll');
   const titleEl = document.querySelector('h1');
@@ -109,6 +110,10 @@
     if (!Number.isFinite(sMax) || sMax < 1) sMax = sMin;
     if (sMin > sMax) [sMin, sMax] = [sMax, sMin];
     return { sMin, sMax };
+  }
+
+  function updateGroupsVisibility() {
+    groupsSection.style.display = repeatToggle.checked ? 'none' : 'block';
   }
 
   function updateStatus(min, max, countVal) {
@@ -221,6 +226,7 @@
     gsizeMaxInput.value = 5;
     allowRepeats = false;
     repeatToggle.checked = false;
+    updateGroupsVisibility();
     generatedSet.clear();
     count = 0;
     historyList.innerHTML = '';
@@ -272,6 +278,7 @@
     clearError();
     allowRepeats = false;
     repeatToggle.checked = false;
+    updateGroupsVisibility();
     const range = getRange();
     if (!range) return;
     const { min, max } = range;
@@ -319,6 +326,7 @@
 
   repeatToggle.addEventListener('change', () => {
     allowRepeats = repeatToggle.checked;
+    updateGroupsVisibility();
   });
 
   eraseBtn.addEventListener('click', () => {
@@ -333,6 +341,7 @@
     drawIndex = 0;
     allowRepeats = false;
     repeatToggle.checked = false;
+    updateGroupsVisibility();
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -389,5 +398,6 @@
   gsizeMinInput.value = 4;
   gsizeMaxInput.value = 5;
   repeatToggle.checked = false;
+  updateGroupsVisibility();
   switchLanguage('ko');
 })();

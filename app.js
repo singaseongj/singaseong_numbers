@@ -175,17 +175,27 @@
 
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
-    // Build a list of "slots" with group ids repeated by their target sizes
+
+    // Build slots with a balanced "deal": each round takes at most one slot per group,
+    // but the round order is randomized. This avoids filling Group 1, then 2, etc.
+    const quotas = groupSizes.slice(); // remaining capacity per group
+    const groups = Array.from({ length: groupCount }, (_, i) => i + 1);
     const slots = [];
-    for (let g = 0; g < groupCount; g++) {
-      for (let i = 0; i < groupSizes[g]; i++) slots.push(g + 1);
+    while (slots.length < drawQueue.length) {
+      // groups with remaining capacity this round
+      const avail = groups.filter(g => quotas[g - 1] > 0);
+      // shuffle the available groups for this round
+      for (let i = avail.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [avail[i], avail[j]] = [avail[j], avail[i]];
+      }
+      // take one slot from each, in this round's random order
+      for (const g of avail) {
+        slots.push(g);
+        quotas[g - 1]--;
+      }
     }
-    // Shuffle slots so upcoming numbers are assigned to groups in random order
-    for (let i = slots.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [slots[i], slots[j]] = [slots[j], slots[i]];
-    }
-    // Pair each predetermined number with a randomized group slot (future is fixed)
+    // Pair each predetermined number with the balanced-random slot order
     for (let i = 0; i < drawQueue.length; i++) {
       numberToGroup[drawQueue[i]] = slots[i];
     }

@@ -11,6 +11,7 @@
   const groupsContainer = document.getElementById('groupsContainer');
   const groupsHeading = document.getElementById('groupsHeading');
   const groupsSection = document.getElementById('groupsSection');
+  const generateAllBtn = document.getElementById('generateAll');
   const titleEl = document.querySelector('h1');
   const minLabel = document.querySelector('label[for="min"]');
   const maxLabel = document.querySelector('label[for="max"]');
@@ -39,7 +40,8 @@
       enterRange: 'Please enter both minimum and maximum numbers.',
       allGenerated: 'All numbers in the range have been generated.',
       groups: 'Groups of 4 or 5',
-      group: 'Group'
+      group: 'Group',
+      generateAll: 'Generate All'
     },
     ko: {
       title: '신가성의 숫자들',
@@ -57,7 +59,8 @@
       enterRange: '최소와 최대 값을 입력하세요.',
       allGenerated: '범위의 모든 숫자를 생성했습니다.',
       groups: '그룹(4인 또는 5인 1조)',
-      group: '그룹'
+      group: '그룹',
+      generateAll: '모두 생성'
     }
   };
 
@@ -222,9 +225,51 @@
     updateStatus(min, max, count);
   }
 
+  function generateAllNumbers() {
+    clearError();
+    const range = getRange();
+    if (!range) return;
+    const { min, max } = range;
+    if (count === 0 || !Object.keys(numberToGroup).length) {
+      initializeGroups(min, max);
+    }
+    const remaining = [];
+    for (let n = min; n <= max; n++) {
+      if (!generatedSet.has(n)) remaining.push(n);
+    }
+    if (!remaining.length) {
+      setError('allGenerated');
+      generateBtn.disabled = true;
+      return;
+    }
+    for (let i = remaining.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
+    }
+    let last;
+    remaining.forEach(value => {
+      generatedSet.add(value);
+      count++;
+      const group = numberToGroup[value];
+      groupLists[group - 1].push(value);
+      renderHistory(value);
+      historyArr.push(value);
+      last = value;
+    });
+    renderResult(last, numberToGroup[last]);
+    renderGroups();
+    updateStatus(min, max, count);
+    generateBtn.disabled = true;
+  }
+
   generateBtn.addEventListener('click', (e) => {
     e.preventDefault();
     generateNumber();
+  });
+
+  generateAllBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    generateAllNumbers();
   });
 
   resetBtn.addEventListener('click', (e) => {
@@ -279,6 +324,7 @@
     eraseBtn.textContent = t.erase;
     historyHeading.textContent = t.history;
     groupsHeading.textContent = t.groups;
+    generateAllBtn.textContent = t.generateAll;
     copyBtn.setAttribute('aria-label', t.copy);
     if (copyTooltip.textContent) copyTooltip.textContent = t.copied;
     const minVal = minInput.value || '—';

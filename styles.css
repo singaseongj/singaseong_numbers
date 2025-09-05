@@ -199,6 +199,12 @@ button:focus, input:focus {
   font-size: 1.2rem;
 }
 
+.groups-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .groups-container {
   display: flex;
   flex-wrap: wrap;

@@ -10,7 +10,6 @@
   const errorBox = document.getElementById('error');
   const groupsContainer = document.getElementById('groupsContainer');
   const groupsHeading = document.getElementById('groupsHeading');
-  const groupsSection = document.getElementById('groupsSection');
   const generateAllBtn = document.getElementById('generateAll');
   const titleEl = document.querySelector('h1');
   const minLabel = document.querySelector('label[for="min"]');
@@ -129,7 +128,7 @@
     drawQueue = nums.slice();
     drawIndex = 0;
 
-    // Generalized sizing: each group within [sMin, sMax], prefer smaller (sMin).
+    // Generalized sizing: each group within [sMin, sMax], prefer fewer groups (larger size).
     const { sMin, sMax } = getGroupSizeRange();
     const gCountMin = Math.ceil(total / sMax);
     const gCountMax = Math.floor(total / sMin);
@@ -138,8 +137,8 @@
     let groupSizes = [];
 
     if (gCountMin <= gCountMax) {
-      // Try the most groups first (more, smaller groups)
-      for (let g = gCountMax; g >= gCountMin; g--) {
+      // Try the fewest groups first (fewer, larger groups)
+      for (let g = gCountMin; g <= gCountMax; g++) {
         const extra = total - sMin * g; // how many +1s we must distribute
         const capacity = g * (sMax - sMin);
         if (extra >= 0 && extra <= capacity) {
@@ -213,12 +212,13 @@
       wrapper.appendChild(ul);
       groupsContainer.appendChild(wrapper);
     });
-    groupsSection.style.display = groupsContainer.childElementCount ? 'block' : 'none';
   }
 
   function resetState() {
     minInput.value = '';
     maxInput.value = '';
+    gsizeMinInput.value = 4;
+    gsizeMaxInput.value = 5;
     allowRepeats = false;
     repeatToggle.checked = false;
     generatedSet.clear();
@@ -230,7 +230,6 @@
     groupLists = [];
     drawQueue = [];
     drawIndex = 0;
-    groupsSection.style.display = 'none';
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -271,6 +270,8 @@
 
   function generateAllNumbers() {
     clearError();
+    allowRepeats = false;
+    repeatToggle.checked = false;
     const range = getRange();
     if (!range) return;
     const { min, max } = range;
@@ -330,7 +331,8 @@
     groupLists = [];
     drawQueue = [];
     drawIndex = 0;
-    groupsSection.style.display = 'none';
+    allowRepeats = false;
+    repeatToggle.checked = false;
     renderResult('—');
     clearError();
     generateBtn.disabled = false;
@@ -384,6 +386,8 @@
   langKoBtn.addEventListener('click', () => switchLanguage('ko'));
   langEnBtn.addEventListener('click', () => switchLanguage('en'));
 
+  gsizeMinInput.value = 4;
+  gsizeMaxInput.value = 5;
   repeatToggle.checked = false;
   switchLanguage('ko');
 })();

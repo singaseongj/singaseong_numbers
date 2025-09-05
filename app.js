@@ -128,49 +128,42 @@
     const total = max - min + 1;
     const nums = [];
     for (let n = min; n <= max; n++) nums.push(n);
-    // fixed, shared order for both single-generate and generate-all
-    for (let i = nums.length - 1; i > 0; i--) {
+
+    // (1) Predetermine DRAW ORDER (shared future for single/all generate)
+    const draw = nums.slice();
+    for (let i = draw.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
-      [nums[i], nums[j]] = [nums[j], nums[i]];
+      [draw[i], draw[j]] = [draw[j], draw[i]];
     }
-    drawQueue = nums.slice();
+    drawQueue = draw;
     drawIndex = 0;
     deals = [];
     dealIndex = 0;
 
-    // Generalized sizing: each group within [sMin, sMax], prefer MORE groups (smaller size).
+    // (2) Compute group sizes within [sMin, sMax] (same policy as before)
     const { sMin, sMax } = getGroupSizeRange();
     const gCountMin = Math.ceil(total / sMax);
     const gCountMax = Math.floor(total / sMin);
 
     let groupCount = 0;
     let groupSizes = [];
-
     if (gCountMin <= gCountMax) {
-      // Try the MOST groups first (more, smaller groups)
       for (let g = gCountMax; g >= gCountMin; g--) {
-        const extra = total - sMin * g; // how many +1s we must distribute
+        const extra = total - sMin * g;
         const capacity = g * (sMax - sMin);
         if (extra >= 0 && extra <= capacity) {
           groupCount = g;
           groupSizes = Array(g).fill(sMin);
           let e = extra;
-          // distribute +1 up to sMax, round-robin
           while (e > 0) {
             for (let i = 0; i < groupSizes.length && e > 0; i++) {
-              if (groupSizes[i] < sMax) {
-                groupSizes[i] += 1;
-                e--;
-              }
+              if (groupSizes[i] < sMax) { groupSizes[i] += 1; e--; }
             }
           }
           break;
         }
       }
     }
-
-    // If no exact solution in [sMin, sMax], fall back to near-equal split,
-    // leaning toward MORE groups (smaller sizes).
     if (!groupCount) {
       groupCount = Math.max(1, Math.ceil(total / sMin));
       groupSizes = Array(groupCount).fill(Math.floor(total / groupCount));
@@ -178,32 +171,24 @@
       for (let i = 0; i < remainder; i++) groupSizes[i]++;
     }
 
+    // (3) Independent GROUP ASSIGNMENT: shuffle again and chunk by groupSizes
+    const assignOrder = nums.slice();
+    for (let i = assignOrder.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [assignOrder[i], assignOrder[j]] = [assignOrder[j], assignOrder[i]];
+    }
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
-
-    // Build a balanced "deal": each round takes at most one slot per group,
-    // and the round order is randomized. This avoids filling any group first.
-    const quotas = groupSizes.slice(); // remaining capacity per group
-    const groups = Array.from({ length: groupCount }, (_, i) => i + 1);
-    const slots = [];
-    while (slots.length < drawQueue.length) {
-      // groups with remaining capacity this round
-      const avail = groups.filter(g => quotas[g - 1] > 0);
-      // shuffle the available groups for this round
-      for (let i = avail.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [avail[i], avail[j]] = [avail[j], avail[i]];
-      }
-      // take one slot from each, in this round's random order
-      for (const g of avail) {
-        slots.push(g);
-        quotas[g - 1]--;
+    let idx = 0;
+    for (let g = 0; g < groupCount; g++) {
+      const size = groupSizes[g];
+      for (let k = 0; k < size; k++, idx++) {
+        numberToGroup[assignOrder[idx]] = g + 1; // 1-based
       }
     }
-    // Finalize the single predetermined sequence of {value, group}
-    deals = drawQueue.map((value, i) => ({ value, group: slots[i] }));
-    // Keep this map so existing code (e.g., switchLanguage) still works
-    for (const { value, group } of deals) numberToGroup[value] = group;
+
+    // (4) Pair draw order with preassigned groups
+    deals = drawQueue.map((value) => ({ value, group: numberToGroup[value] }));
   }
 
   function renderResult(value, group) {

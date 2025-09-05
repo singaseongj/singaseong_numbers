@@ -205,6 +205,13 @@ button:focus, input:focus {
   gap: 0.5rem;
 }
 
+.groups-header .gsize-input {
+  width: 3rem;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
 .groups-container {
   display: flex;
   flex-wrap: wrap;

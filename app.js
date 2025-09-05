@@ -22,6 +22,8 @@
   const langKoBtn = document.getElementById('lang-ko');
   const langEnBtn = document.getElementById('lang-en');
   const eraseBtn = document.getElementById('erase');
+  const gsizeMinInput = document.getElementById('gsizeMin');
+  const gsizeMaxInput = document.getElementById('gsizeMax');
 
   const translations = {
     en: {
@@ -39,7 +41,7 @@
       copied: 'Copied to clipboard',
       enterRange: 'Please enter both minimum and maximum numbers.',
       allGenerated: 'All numbers in the range have been generated.',
-      groups: 'Groups of 4 or 5',
+      groups: 'Minimum group members',
       group: 'Group',
       generateAll: 'Generate All'
     },
@@ -58,7 +60,7 @@
       copied: '클립보드에 복사완료',
       enterRange: '최소와 최대 값을 입력하세요.',
       allGenerated: '범위의 모든 숫자를 생성했습니다.',
-      groups: '그룹(4인 또는 5인 1조)',
+      groups: '그룹 내 인원',
       group: '그룹',
       generateAll: '모두 생성'
     }
@@ -73,6 +75,9 @@
   let historyArr = [];
   let numberToGroup = {};
   let groupLists = [];
+  // Predetermined draw order so Generate / Generate All share the same "future"
+  let drawQueue = [];
+  let drawIndex = 0;
 
   function setError(key) {
     currentErrorKey = key;
@@ -98,6 +103,15 @@
     return { min, max };
   }
 
+  function getGroupSizeRange() {
+    let sMin = parseInt(gsizeMinInput?.value, 10);
+    let sMax = parseInt(gsizeMaxInput?.value, 10);
+    if (!Number.isFinite(sMin) || sMin < 1) sMin = 1;
+    if (!Number.isFinite(sMax) || sMax < 1) sMax = sMin;
+    if (sMin > sMax) [sMin, sMax] = [sMax, sMin];
+    return { sMin, sMax };
+  }
+
   function updateStatus(min, max, countVal) {
     const t = translations[currentLang];
     statusLine.textContent = `${t.range}: ${min}–${max} • ${t.generated}: ${countVal}`;
@@ -107,31 +121,60 @@
     const total = max - min + 1;
     const nums = [];
     for (let n = min; n <= max; n++) nums.push(n);
+    // fixed, shared order for both single-generate and generate-all
     for (let i = nums.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [nums[i], nums[j]] = [nums[j], nums[i]];
     }
-    const gMin = Math.ceil(total / 5);
-    const gMax = Math.floor(total / 4);
-    let groupCount;
+    drawQueue = nums.slice();
+    drawIndex = 0;
+
+    // Generalized sizing: each group within [sMin, sMax], prefer smaller (sMin).
+    const { sMin, sMax } = getGroupSizeRange();
+    const gCountMin = Math.ceil(total / sMax);
+    const gCountMax = Math.floor(total / sMin);
+
+    let groupCount = 0;
     let groupSizes = [];
-    if (gMin > gMax) {
-      groupCount = Math.ceil(total / 4);
-      groupSizes = Array(groupCount).fill(Math.floor(total / groupCount));
-      const remainder = total % groupCount;
-      for (let i = 0; i < remainder; i++) groupSizes[i]++;
-    } else {
-      groupCount = gMax;
-      const fiveGroups = total - 4 * groupCount;
-      groupSizes = Array(groupCount).fill(4);
-      for (let i = 0; i < fiveGroups; i++) groupSizes[i]++;
+
+    if (gCountMin <= gCountMax) {
+      // Try the most groups first (more, smaller groups)
+      for (let g = gCountMax; g >= gCountMin; g--) {
+        const extra = total - sMin * g; // how many +1s we must distribute
+        const capacity = g * (sMax - sMin);
+        if (extra >= 0 && extra <= capacity) {
+          groupCount = g;
+          groupSizes = Array(g).fill(sMin);
+          let e = extra;
+          // distribute +1 up to sMax, round-robin
+          while (e > 0) {
+            for (let i = 0; i < groupSizes.length && e > 0; i++) {
+              if (groupSizes[i] < sMax) {
+                groupSizes[i] += 1;
+                e--;
+              }
+            }
+          }
+          break;
+        }
+      }
     }
+
+    // If no exact solution in [sMin, sMax], fall back to near-equal split
+    if (!groupCount) {
+      groupCount = Math.max(1, Math.round(total / ((sMin + sMax) / 2)));
+      groupSizes = Array(groupCount).fill(Math.floor(total / groupCount));
+      let remainder = total % groupCount;
+      for (let i = 0; i < remainder; i++) groupSizes[i]++;
+    }
+
     numberToGroup = {};
     groupLists = Array.from({ length: groupCount }, () => []);
+    // Assign numbers to groups according to the same predetermined order
     let idx = 0;
     groupSizes.forEach((size, g) => {
       for (let i = 0; i < size; i++) {
-        const num = nums[idx++];
+        const num = drawQueue[idx++];
         numberToGroup[num] = g + 1;
       }
     });
@@ -185,6 +228,8 @@
     groupsContainer.innerHTML = '';
     numberToGroup = {};
     groupLists = [];
+    drawQueue = [];
+    drawIndex = 0;
     groupsSection.style.display = 'none';
     renderResult('—');
     clearError();
@@ -203,16 +248,15 @@
     let value;
     const total = max - min + 1;
     if (!allowRepeats) {
-      if (generatedSet.size === total) {
+      if (drawIndex >= drawQueue.length) {
         setError('allGenerated');
         generateBtn.disabled = true;
         return;
       }
-      do {
-        value = Math.floor(Math.random() * (max - min + 1)) + min;
-      } while (generatedSet.has(value));
+      value = drawQueue[drawIndex++];
       generatedSet.add(value);
     } else {
+      // repeats allowed: still random
       value = Math.floor(Math.random() * (max - min + 1)) + min;
     }
     count++;
@@ -233,18 +277,12 @@
     if (count === 0 || !Object.keys(numberToGroup).length) {
       initializeGroups(min, max);
     }
-    const remaining = [];
-    for (let n = min; n <= max; n++) {
-      if (!generatedSet.has(n)) remaining.push(n);
-    }
+    // Use the predetermined order to take all remaining (unique) numbers
+    const remaining = drawQueue.slice(drawIndex);
     if (!remaining.length) {
       setError('allGenerated');
       generateBtn.disabled = true;
       return;
-    }
-    for (let i = remaining.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [remaining[i], remaining[j]] = [remaining[j], remaining[i]];
     }
     let last;
     remaining.forEach(value => {
@@ -256,6 +294,7 @@
       historyArr.push(value);
       last = value;
     });
+    drawIndex = drawQueue.length;
     renderResult(last, numberToGroup[last]);
     renderGroups();
     updateStatus(min, max, count);
@@ -289,6 +328,8 @@
     groupsContainer.innerHTML = '';
     numberToGroup = {};
     groupLists = [];
+    drawQueue = [];
+    drawIndex = 0;
     groupsSection.style.display = 'none';
     renderResult('—');
     clearError();

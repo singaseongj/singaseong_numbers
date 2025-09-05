@@ -118,9 +118,7 @@
       const remainder = total % groupCount;
       for (let i = 0; i < remainder; i++) groupSizes[i]++;
     } else {
-      groupCount = Math.round(total / 4.5);
-      if (groupCount < gMin) groupCount = gMin;
-      if (groupCount > gMax) groupCount = gMax;
+      groupCount = gMax;
       const fiveGroups = total - 4 * groupCount;
       groupSizes = Array(groupCount).fill(4);
       for (let i = 0; i < fiveGroups; i++) groupSizes[i]++;

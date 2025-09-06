@@ -4,7 +4,9 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.6;
   background: #f0f0f0;
   display: flex;
   justify-content: center;
@@ -13,13 +15,14 @@ body {
 }
 
 .container {
-  background: #fff;
+  background: #fafafa;
   max-width: 600px;
   width: 100%;
   margin: 2rem;
   padding: 2rem;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
 h1 {
@@ -52,7 +55,7 @@ h1 {
 
 .field input[type=number] {
   padding: 0.5rem;
-  border: 1px solid #ccc;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
 }
 
@@ -67,7 +70,7 @@ h1 {
   appearance: none;
   width: 40px;
   height: 20px;
-  background: #ccc;
+  background: #e2e8f0;
   border-radius: 10px;
   position: relative;
   cursor: pointer;
@@ -88,7 +91,7 @@ h1 {
 }
 
 .switch-field input[type=checkbox]:checked {
-  background: #2563eb;
+  background: #a5b4fc;
 }
 
 .switch-field input[type=checkbox]:checked::before {
@@ -105,14 +108,14 @@ button {
   padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 4px;
-  background: #2563eb;
-  color: #fff;
+  background: #a5b4fc;
+  color: #1e293b;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
 }
 
 button:hover {
-  background: #1d4ed8;
+  background: #9ba2fa;
 }
 
 button:active {
@@ -121,28 +124,28 @@ button:active {
 }
 
 #generate {
-  background: #22c55e;
+  background: #bbf7d0;
 }
 
 #generate:hover {
-  background: #16a34a;
+  background: #a7e9bf;
 }
 
 #reset {
-  background: #ef4444;
+  background: #fecaca;
 }
 
 #reset:hover {
-  background: #dc2626;
+  background: #fda4a4;
 }
 
 #erase {
-  background: #facc15;
-  color: #fff;
+  background: #fef9c3;
+  color: #1e293b;
 }
 
 #erase:hover {
-  background: #eab308;
+  background: #fde68a;
 }
 
 button:disabled {
@@ -151,7 +154,7 @@ button:disabled {
 }
 
 button:focus, input:focus {
-  outline: 2px solid #1d4ed8;
+  outline: 2px solid #4b5563;
   outline-offset: 2px;
 }
 
@@ -182,7 +185,7 @@ button:focus, input:focus {
 }
 
 #history li {
-  background: #f3f3f3;
+  background: #f9fafb;
   padding: 0.4rem 0.8rem;
   border-radius: 4px;
 }
@@ -208,7 +211,7 @@ button:focus, input:focus {
 .groups-header .gsize-input {
   width: 3rem;
   padding: 0.2rem 0.4rem;
-  border: 1px solid #ccc;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
 }
 
@@ -219,7 +222,7 @@ button:focus, input:focus {
 }
 
 .group {
-  border: 1px solid #ccc;
+  border: 1px solid #e2e8f0;
   border-radius: 4px;
   padding: 0.5rem;
   min-width: 80px;
@@ -237,7 +240,7 @@ button:focus, input:focus {
 }
 
 .group li {
-  background: #f3f3f3;
+  background: #f9fafb;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   margin-bottom: 0.3rem;

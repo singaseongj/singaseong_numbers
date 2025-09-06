@@ -24,6 +24,7 @@
   const eraseBtn = document.getElementById('erase');
   const gsizeMinInput = document.getElementById('gsizeMin');
   const gsizeMaxInput = document.getElementById('gsizeMax');
+  const countdownEl = document.getElementById('countdown');
 
   const translations = {
     en: {
@@ -318,6 +319,27 @@
     generateBtn.disabled = true;
   }
 
+  function runCountdown(callback) {
+    let num = 5;
+    const tick = () => {
+      countdownEl.textContent = num;
+      countdownEl.classList.add('show');
+      setTimeout(() => {
+        countdownEl.classList.remove('show');
+        setTimeout(() => {
+          num--;
+          if (num > 0) {
+            tick();
+          } else {
+            countdownEl.textContent = '';
+            if (callback) callback();
+          }
+        }, 500);
+      }, 500);
+    };
+    tick();
+  }
+
   generateBtn.addEventListener('click', (e) => {
     e.preventDefault();
     generateNumber();
@@ -325,7 +347,11 @@
 
   generateAllBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    generateAllNumbers();
+    generateAllBtn.disabled = true;
+    runCountdown(() => {
+      generateAllNumbers();
+      generateAllBtn.disabled = false;
+    });
   });
 
   resetBtn.addEventListener('click', (e) => {

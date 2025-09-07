@@ -24,6 +24,8 @@
   const eraseBtn = document.getElementById('erase');
   const gsizeMinInput = document.getElementById('gsizeMin');
   const gsizeMaxInput = document.getElementById('gsizeMax');
+  const gsizeMinLabel = document.getElementById('gsizeMinLabel');
+  const gsizeMaxLabel = document.getElementById('gsizeMaxLabel');
   const countdownEl = document.getElementById('countdown');
 
   const translations = {
@@ -44,7 +46,9 @@
       allGenerated: 'All numbers in the range have been generated.',
       groups: 'Minimum group members',
       group: 'Group',
-      generateAll: 'Generate All'
+      generateAll: 'Generate All',
+      gsizeMin: 'Min',
+      gsizeMax: 'Max'
     },
     ko: {
       title: '신가성의 숫자들',
@@ -63,7 +67,9 @@
       allGenerated: '범위의 모든 숫자를 생성했습니다.',
       groups: '그룹 내 인원',
       group: '그룹',
-      generateAll: '모두 생성'
+      generateAll: '모두 생성',
+      gsizeMin: '최소',
+      gsizeMax: '최대'
     }
   };
 
@@ -413,6 +419,8 @@
     eraseBtn.textContent = t.erase;
     historyHeading.textContent = t.history;
     groupsHeading.textContent = t.groups;
+    gsizeMinLabel.textContent = t.gsizeMin;
+    gsizeMaxLabel.textContent = t.gsizeMax;
     generateAllBtn.textContent = t.generateAll;
     copyBtn.setAttribute('aria-label', t.copy);
     if (copyTooltip.textContent) copyTooltip.textContent = t.copied;

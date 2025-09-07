@@ -212,12 +212,13 @@ button:focus, input:focus {
 
 .groups-header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  justify-content: center;
   gap: 0.5rem;
+  padding: 0.5rem 0;
 }
 
 .groups-header h2 {
-  flex: 1;
   margin: 0;
 }
 

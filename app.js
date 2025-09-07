@@ -61,7 +61,7 @@
       copied: '클립보드에 복사완료',
       enterRange: '최소와 최대 값을 입력하세요.',
       allGenerated: '범위의 모든 숫자를 생성했습니다.',
-      groups: '그룹 내\n인원',
+      groups: '그룹 내 인원',
       group: '그룹',
       generateAll: '모두 생성'
     }
@@ -429,8 +429,14 @@
     renderGroups();
   }
 
-  langKoBtn.addEventListener('click', () => switchLanguage('ko'));
-  langEnBtn.addEventListener('click', () => switchLanguage('en'));
+  langKoBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchLanguage('ko');
+  });
+  langEnBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchLanguage('en');
+  });
 
   gsizeMinInput.value = 4;
   gsizeMaxInput.value = 5;

@@ -113,6 +113,7 @@ button {
   font-size: 1.2rem;
   cursor: pointer;
   transition: background 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
 }
 
 button:hover {
@@ -201,6 +202,10 @@ button:focus, input:focus {
 
 .groups h2 {
   font-size: 1.2rem;
+}
+
+#groupsHeading {
+  white-space: pre-line;
 }
 
 .groups-header {
@@ -302,6 +307,8 @@ button:focus, input:focus {
 
 .lang-buttons button {
   margin: 0 0.5rem;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.6rem;
 }
 
 .lang-sep {

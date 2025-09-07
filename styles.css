@@ -10,7 +10,7 @@ body {
   background: #f0f0f0;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
 }
 
@@ -102,6 +102,12 @@ h1 {
   display: flex;
   gap: 1rem;
   flex: 1 1 100%;
+}
+
+.buttons button,
+#generateAll {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 button {
@@ -204,14 +210,15 @@ button:focus, input:focus {
   font-size: 1.2rem;
 }
 
-#groupsHeading {
-  white-space: pre-line;
-}
-
 .groups-header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.groups-header h2 {
+  flex: 1;
+  margin: 0;
 }
 
 .groups-header .gsize-input {
@@ -305,10 +312,11 @@ button:focus, input:focus {
   text-align: center;
 }
 
-.lang-buttons button {
+.lang-buttons a {
   margin: 0 0.5rem;
   font-size: 0.8rem;
-  padding: 0.3rem 0.6rem;
+  color: #1e293b;
+  text-decoration: underline;
 }
 
 .lang-sep {
